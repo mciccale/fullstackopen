@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import noteService from './services/notes';
 import Note from './components/Note';
 
-function App(props) {
-  const [notes, setNotes] = useState(props.notes);
+function App() {
+  const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('a new note...');
   const [showAll, setShowAll] = useState(true);
+  useEffect(() => {
+    noteService.getAll().then((data) => {
+      setNotes(data);
+    });
+  }, []);
   const addNote = (event) => {
     event.preventDefault();
     const noteObject = {
@@ -12,12 +18,27 @@ function App(props) {
       important: Math.random() < 0.5,
       id: notes.length + 1,
     };
-    setNotes(notes.concat(noteObject));
-    setNewNote('');
+    noteService.create(noteObject).then((data) => {
+      setNotes(notes.concat(data));
+      setNewNote('');
+    });
   };
   const handleNoteChange = (event) => {
-    console.log(event.target.value);
     setNewNote(event.target.value);
+  };
+  const toggleImportance = (id) => {
+    const note = notes.find((note) => note.id === id);
+    const newNote = { ...note, important: !note.important };
+    noteService
+      .update(id, newNote)
+      .then((data) => {
+        setNotes(notes.map((note) => (note.id !== id ? note : data)));
+      })
+      .catch((err) => {
+        console.log(err);
+        alert(`the note '${note.content}' was already deleted from the server`);
+        setNotes(notes.filter((note) => note.id !== id));
+      });
   };
   const notesToShow = showAll
     ? notes
@@ -32,7 +53,7 @@ function App(props) {
       </div>
       <ul>
         {notesToShow.map((note) => (
-          <Note key={note.id} note={note} />
+          <Note key={note.id} note={note} toggleImportance={toggleImportance} />
         ))}
       </ul>
       <form onSubmit={addNote}>
