@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
-import noteService from './services/notes';
-import Note from './components/Note';
+import { useState, useEffect } from "react";
+import noteService from "./services/notes.js";
+import Note from "./components/Note.jsx";
+import Notification from "./components/Notification.jsx";
+import Footer from "./components/Footer.jsx";
 
 function App() {
   const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState('a new note...');
+  const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
   useEffect(() => {
     noteService.getAll().then((data) => {
       setNotes(data);
@@ -20,7 +23,7 @@ function App() {
     };
     noteService.create(noteObject).then((data) => {
       setNotes(notes.concat(data));
-      setNewNote('');
+      setNewNote("");
     });
   };
   const handleNoteChange = (event) => {
@@ -34,9 +37,15 @@ function App() {
       .then((data) => {
         setNotes(notes.map((note) => (note.id !== id ? note : data)));
       })
-      .catch((err) => {
-        console.log(err);
-        alert(`the note '${note.content}' was already deleted from the server`);
+      .catch(() => {
+        setErrorMessage(
+          `Note "${note.content}" was already removed from the server`
+        );
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+        // console.log(err);
+        // alert(`the note '${note.content}' was already deleted from the server`);
         setNotes(notes.filter((note) => note.id !== id));
       });
   };
@@ -46,9 +55,10 @@ function App() {
   return (
     <div>
       <h1>Notes</h1>
+      <Notification message={errorMessage} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
+          show {showAll ? "important" : "all"}
         </button>
       </div>
       <ul>
@@ -60,6 +70,7 @@ function App() {
         <input value={newNote} onChange={handleNoteChange} />
         <button type="submit">save</button>
       </form>
+      <Footer />
     </div>
   );
 }
