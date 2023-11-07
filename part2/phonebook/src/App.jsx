@@ -41,6 +41,7 @@ function App() {
             setPersons(persons.map((p) => (p.id !== data.id ? p : data)));
             setNewName("");
             setNewNumber("");
+            showNotification({ action: "update", person });
           })
           .catch((err) => {
             setMessage({
@@ -53,7 +54,6 @@ function App() {
               setMessage(null);
             }, 5000);
           });
-      showNotification({ action: "update", person });
       return;
     }
     const newPerson = {
@@ -66,6 +66,7 @@ function App() {
         setPersons(persons.concat(data));
         setNewName("");
         setNewNumber("");
+        showNotification({ action: "create", person: newPerson });
       })
       .catch((err) => {
         setMessage({
@@ -76,7 +77,6 @@ function App() {
           setMessage(null);
         }, 5000);
       });
-    showNotification({ action: "create", person: newPerson });
   };
   const deletePerson = (id) => {
     const person = persons.find((p) => p.id === id);
