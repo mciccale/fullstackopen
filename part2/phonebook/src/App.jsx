@@ -42,10 +42,12 @@ function App() {
             setNewName("");
             setNewNumber("");
           })
-          .catch(() => {
+          .catch((err) => {
             setMessage({
               type: "error",
-              content: `Information of ${person.name} has already been removed from the server`,
+              content:
+                err.response.data.error ??
+                `Information of ${person.name} has already been removed from the server`,
             });
             setTimeout(() => {
               setMessage(null);
@@ -58,11 +60,22 @@ function App() {
       name: newName,
       number: newNumber,
     };
-    numbersService.create(newPerson).then((data) => {
-      setPersons(persons.concat(data));
-      setNewName("");
-      setNewNumber("");
-    });
+    numbersService
+      .create(newPerson)
+      .then((data) => {
+        setPersons(persons.concat(data));
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((err) => {
+        setMessage({
+          type: "error",
+          content: err.response.data.error,
+        });
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      });
     showNotification({ action: "create", person: newPerson });
   };
   const deletePerson = (id) => {
