@@ -7,3 +7,5 @@ This repository contains the exercises of the [fullstackopen](https://fullstacko
 | 0 | ✅ |
 | 1 | ✅ |
 | 2 | ✅ |
+| 3 | ✅ |
+| 4 | ✅ |
