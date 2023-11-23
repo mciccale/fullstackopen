@@ -21,6 +21,7 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
+    'comma-dangle': 'off',
     'no-console': 'off',
     'import/no-extraneous-dependencies': 'off',
     'no-underscore-dangle': 'off',
@@ -28,5 +29,6 @@ module.exports = {
     'arrow-body-style': 'off',
     'consistent-return': 'off',
     'object-curly-newline': 'off',
+    'operator-linebreak': 'off',
   },
 };
